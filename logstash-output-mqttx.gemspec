@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "logstash-output-mqttx"
-  s.version = "1.0.0"
+  s.version = "1.0.1"
   s.licenses = ["Apache-2.0"]
   s.summary = "This is Logstash output plugin for the http://mqtt.org/[MQTT] protocol"
   s.description = "This gem is a plugin for Logstash, and is not a stand-alone program."

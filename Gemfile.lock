@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    logstash-output-mqttx (1.0.0)
+    logstash-output-mqttx (1.0.1)
       logstash-codec-json
       logstash-core-plugin-api (~> 2.0)
       mqtt (~> 0.7.0)

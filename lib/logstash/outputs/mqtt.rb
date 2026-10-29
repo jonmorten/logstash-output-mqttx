@@ -160,13 +160,20 @@ class LogStash::Outputs::MQTT < LogStash::Outputs::Base
   private
 
   def mqtt_client
-    return @mqtt_client if @mqtt_client
+    return @mqtt_client if @mqtt_client && @mqtt_client.connected?
 
+    reset_client
     log_opts = @options.dup
     log_opts[:password] = "****" if log_opts.key?(:password)
     @logger.debug("Connecting MQTT with options #{log_opts}")
 
     @mqtt_client = MQTT::Client.connect(@options)
+  end
+
+  def reset_client
+    return unless @mqtt_client
+    @mqtt_client.disconnect(false) rescue nil
+    @mqtt_client = nil
   end
 
   def handle_events
@@ -175,9 +182,9 @@ class LogStash::Outputs::MQTT < LogStash::Outputs::Base
       mqtt_client.publish(event.sprintf(@topic), encoded, @retain, @qos)
       @event_buffer.shift
     end
-  rescue StandardError => e
+  rescue MQTT::Exception, StandardError => e
     @logger.error("Error #{e.message} while publishing to MQTT server. Will retry in #{@connect_retry_interval} seconds.")
-    @mqtt_client = nil
+    reset_client
     Stud.stoppable_sleep(@connect_retry_interval, 1) { @closing }
     retry unless @closing
   end
